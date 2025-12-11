@@ -1,6 +1,8 @@
 package editors;
 
+#if desktop
 import Discord.DiscordClient;
+#end
 import sys.FileSystem;
 import flxanimate.FlxAnimate;
 import flixel.math.FlxPoint;
