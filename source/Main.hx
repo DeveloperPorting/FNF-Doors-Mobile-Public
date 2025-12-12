@@ -145,7 +145,9 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		#if !mobile
 		FlxG.stage.quality = BEST;
+		#end
 
         #if mobile
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(MobileUtil.getDirectory()));
