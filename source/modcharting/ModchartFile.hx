@@ -64,7 +64,7 @@ class ModchartFile
         var rawJson = null;
         var folderShit:String = "";
         #if sys
-        #if PSYCH
+        #if (PSYCH && MODS_ALLOWED)
 		var moddyFile:String = Paths.modsJson(Paths.formatToSongPath(folder) + '/modchart');
 		if(FileSystem.exists(moddyFile)) {
 			rawJson = File.getContent(moddyFile).trim();
