@@ -1945,16 +1945,19 @@ class ArrowPath extends Modifier {
             currentValue = 1.0; //the code that stop the mod from running gets confused when it resets in the editor i guess??
         }
     public function loadPath() {
-        var file = CoolUtil.coolTextFile(Paths.modFolders("data/"+PlayState.SONG.song.toLowerCase()+"/customMods/path.txt"));
-        var file2 = CoolUtil.coolTextFile(Paths.getPreloadPath("data/"+PlayState.SONG.song.toLowerCase()+"/customMods/path.txt"));
+        var file = CoolUtil.coolTextFile(Paths.getPreloadPath("data/"+PlayState.SONG.song.toLowerCase()+"/customMods/path.txt"));
         var filePath = null;
+        #if MODS_ALLOWED
+        var filemod = CoolUtil.coolTextFile(Paths.modFolders("data/"+PlayState.SONG.song.toLowerCase()+"/customMods/path.txt"));
+        if (filemod != null) {
+            filePath = filemod;
+        }
+        #end
         if (file != null) {
             filePath = file;
-        }else if (file2 != null) {
-            filePath = file2;
         }else{
             return;
-        }
+		}
 
         var path = new List<TimeVector>();
         var _g = 0;
