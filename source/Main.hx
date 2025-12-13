@@ -156,7 +156,7 @@ class Main extends Sprite
 
 		// Data folder
 		if (!FileSystem.exists('assets/')) {
-			extension.androidtools.Tools.showAlertDialog("FNF: Doors Requirement", "Please copy the Assets folder from the APK to " + MobileUtil.getDirectory() + ", so you can play", {name: "OK", func: null}, null);
+			extension.androidtools.Tools.showAlertDialog("FNF: Doors Engine Requirement", "Please copy the Assets folder from the APK to " + MobileUtil.getDirectory() + ", so you can play", {name: "OK", func: null}, null);
 		}
 		#end
 		
