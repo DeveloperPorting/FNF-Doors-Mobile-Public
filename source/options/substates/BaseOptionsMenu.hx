@@ -83,6 +83,12 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		DiscordClient.changePresence(rpcTitle, null);
 		#end
 
+		#if mobile
+		addVirtualPad(LEFT_FULL, NONE);
+		addVirtualPadCamera();
+		virtualPad.y -= 80;
+		#end
+
 		// avoids lagspikes while scrolling through menus!
 		grpOptions = new FlxTypedSpriteGroup<DoorsOption>(24, 126);
 		add(grpOptions);
