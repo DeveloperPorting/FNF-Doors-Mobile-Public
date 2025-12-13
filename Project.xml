@@ -56,6 +56,7 @@
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3"  unless="web"/>
+	<assets path="assets/mobile" if="mobile"/>
 
 	<!-- DONT ENABLE THIS -->
 	<define name="CHECK_FOR_UPDATES" if="desktop officialBuild"/>
@@ -99,8 +100,8 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<!-- Defines -->
-	<define name="GLASSHAT" if="final"/>
-	<define name="DISCORD"/>
+	<define name="GLASSHAT" if="final" />
+	<define name="DISCORD" if="desktop" />
 	<define name="CRASH_HANDLER" if="desktop" />
 	<haxedef name="openfl-enable-handle-error" />
 	<haxedef name="HXVLC_NO_SHARE_DIRECTORY" if="VIDEOS_ALLOWED" />

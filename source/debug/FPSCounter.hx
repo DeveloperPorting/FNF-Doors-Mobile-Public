@@ -65,6 +65,7 @@ class FPSCounter extends TextField
 
 		currentFPS = times.length < FlxG.updateFramerate ? times.length : FlxG.updateFramerate;		
 		updateText();
+		setScale();
 		deltaTimeout += deltaTime;
 	}
 
@@ -78,6 +79,14 @@ class FPSCounter extends TextField
 		if (currentFPS < FlxG.drawFramerate * 0.5)
 			textColor = 0xFFFF0000;
 	}
+
+	#if mobile
+	public inline function setScale(?scale:Float){
+		if(scale == null)
+			scale = Math.min(FlxG.stage.window.width / FlxG.width, FlxG.stage.window.height / FlxG.height);
+		    scaleX = scaleY = #if android (scale > 1 ? scale : 1) #else (scale < 1 ? scale : 1) #end;
+	}
+	#end
 
 	inline function get_memoryMegas():Float {
 		return cast(System.totalMemory, UInt);
