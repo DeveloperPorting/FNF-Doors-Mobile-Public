@@ -883,6 +883,21 @@ class PlayState extends MusicBeatState
 		#end
 		playbackRate = 1;
 
+		#if mobile
+		switch (SONG.characters[2].toLowerCase())
+		   {
+			 case 'eyes' | 'halt':
+		   	    addMobileControls(false, 1);
+			 default:
+				if (SONG.hasHeartbeat) {
+				  addMobileControls(false, 2);
+				} else {
+				  addMobileControls(false);
+				}
+		   }
+			mobileControls.visible = false;
+		#end
+
 		keysArray = [
 			'note_left',
 			'note_down',
@@ -2085,6 +2100,10 @@ class PlayState extends MusicBeatState
 	public var inIntro:Bool = false;
 	public function startCountdown()
 	{
+		#if mobile
+			mobileControls.visible = true;
+		#end
+		
 		if(startedCountdown) {
 			return false;
 		}
@@ -3167,7 +3186,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		if (controls.PAUSE && startedCountdown && canPause)
+		if (controls.PAUSE #if android || FlxG.android.justReleased.BACK #end && startedCountdown && canPause)
 		{
 			openPauseMenu();
 		}
@@ -4732,6 +4751,10 @@ class PlayState extends MusicBeatState
 	public var transitioning = false;
 	public function endSong()
 	{
+		#if mobile
+			mobileControls.visible = false;
+		#end
+			
 		//Should kill you if you tried to cheat
 		if(!startingSong) {
 			notes.forEach(function(daNote:Note) {
