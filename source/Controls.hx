@@ -43,8 +43,8 @@ class Controls
 	private function get_NOTE_DOWN_P() return justPressed('note_down');
 	private function get_NOTE_LEFT_P() return justPressed('note_left');
 	private function get_NOTE_RIGHT_P() return justPressed('note_right');
-	private function get_HEARTBEAT_LEFT_P() return justPressed('note_left');
-	private function get_HEARTBEAT_RIGHT_P() return justPressed('note_right');
+	private function get_HEARTBEAT_LEFT_P() return justPressed('heartbeat_left');
+	private function get_HEARTBEAT_RIGHT_P() return justPressed('heartbeat_right');
 
 	// Held buttons (directions)
 	public var UI_UP(get, never):Bool;
@@ -152,12 +152,12 @@ class Controls
 				if (FlxG.gamepads.anyJustPressed(key) == true)
 				{
 					controllerMode = true;
-					privatetrue;
+					return true;
 				}
 			}
 		}
 		return false;
-		}
+	}
 	private function _myGamepadPressed(keys:Array<FlxGamepadInputID>):Bool
 	{
 		if(keys != null)
@@ -188,10 +188,9 @@ class Controls
 		}
 		return false;
 	}
-        public var isInSubstate:Bool = false; // don't worry about this it becomes true and false on it's own in MusicBeatSubstate
+    public var isInSubstate:Bool = false; // don't worry about this it becomes true and false on it's own in MusicBeatSubstate
 	public var requested(get, default):Dynamic; // is set to MusicBeatState or MusicBeatSubstate when the constructor is called
 	public var gameplayRequest(get, default):Dynamic; // for PlayState and EditorPlayState (hitbox and virtualPad)
-		// public var mobileC(get, never):Bool;
 	
 	private function virtualPadPressed(keys:Array<FlxMobileInputID>):Bool
 	{
