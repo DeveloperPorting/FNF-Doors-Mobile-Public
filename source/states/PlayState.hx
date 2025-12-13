@@ -883,21 +883,6 @@ class PlayState extends MusicBeatState
 		#end
 		playbackRate = 1;
 
-		#if mobile
-		switch (SONG.characters[2].toLowerCase())
-		   {
-			 case 'eyes' | 'halt':
-		   	    addMobileControls(false, 1);
-			 default:
-				if (SONG.hasHeartbeat) {
-				  addMobileControls(false, 2);
-				} else {
-				  addMobileControls(false);
-				}
-		   }
-			mobileControls.visible = false;
-		#end
-
 		keysArray = [
 			'note_left',
 			'note_down',
@@ -1358,6 +1343,21 @@ class PlayState extends MusicBeatState
 		bottomCinematicBar = new FlxSprite(0, 720).makeSolid(1280, 400, FlxColor.BLACK);
 		bottomCinematicBar.cameras = [camHUD];
 		uiGroup.add(bottomCinematicBar);
+
+		#if mobile
+		switch (SONG.characters[2].toLowerCase())
+		   {
+			 case 'eyes' | 'halt':
+		   	    addMobileControls(false, 1);
+			 default:
+				if (SONG.hasHeartbeat) {
+				  addMobileControls(false, 2);
+				} else {
+				  addMobileControls(false);
+				}
+		   }
+			mobileControls.visible = false;
+		#end
 
 		strumLine = new FlxSprite(ClientPrefs.data.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeSolid(FlxG.width, 10);
 		if(ClientPrefs.data.downScroll) strumLine.y = FlxG.height - 150;
