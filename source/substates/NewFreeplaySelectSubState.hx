@@ -138,6 +138,12 @@ class NewFreeplaySelectSubState extends MusicBeatSubstate
 
 		Paths.image("freeplay/modifierHover"); //preload the hovered image
 
+        #if mobile
+		addVirtualPad(LEFT_FULL, A_B);
+		addVirtualPadCamera();
+		virtualPad.y -= 140;
+		#end
+		
 		startGaming();
 		changeSelection(0);
 	}
