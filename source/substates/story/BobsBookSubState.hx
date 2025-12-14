@@ -36,6 +36,10 @@ class BobsBookSubState extends StoryModeSubState {
         //add(pageShading);
         add(leftDrawing);
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+        #if mobile
+		addVirtualPad(LEFT_RIGHT, B);
+		addVirtualPadCamera();
+		#end
         changePage(0);
         startGaming();
     }
