@@ -126,6 +126,11 @@ class NewFreeplayState extends MusicBeatState
 		wipOverlay.setGraphicSize(1280, 720);
 		wipOverlay.updateHitbox();
 		add(wipOverlay);
+
+		#if mobile
+		addVirtualPad(LEFT_RIGHT, A_B);
+		addVirtualPadCamera();
+		#end
 		
 		changeCategory(0);
 		inBook = false;
