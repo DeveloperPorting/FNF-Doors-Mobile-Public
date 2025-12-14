@@ -351,6 +351,17 @@ class TitleState extends MusicBeatState
 			pressedExitState = true;
 		}
 
+		#if mobile
+		for (touch in FlxG.touches.list)
+		{
+			if (initialized && touch.justPressed)
+			{
+				exitState();
+			    pressedExitState = true;
+			}
+		}
+		#end
+
 		super.update(elapsed);
 	}
 
