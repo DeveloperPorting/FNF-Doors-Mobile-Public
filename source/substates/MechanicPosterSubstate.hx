@@ -59,6 +59,19 @@ class MechanicPosterSubstate extends FlxSubState{
             }
         }
 
+		#if mobile
+		for (touch in FlxG.touches.list)
+		{
+		  if(!isOff && canYouRemove){
+			 if (touch.justPressed)
+			 {
+				FlxG.sound.play(Paths.sound("lock"));
+                removeCurPoster();
+			 }
+		  }
+		}
+		#end
+
         super.update(elapsed);
     }
 
