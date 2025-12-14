@@ -84,6 +84,11 @@ class RunDifficultySelectSubState extends StoryModeSubState
         add(leftSelector);
         add(rightSelector);
 
+		#if mobile
+		addVirtualPad(NONE, A);
+		addVirtualPadCamera();
+		#end
+
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		startGaming();
