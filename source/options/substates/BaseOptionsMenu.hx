@@ -130,10 +130,10 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		if(canUpdate){
 			var upScroll = FlxG.mouse.wheel > 0;
 			var downScroll = FlxG.mouse.wheel < 0;
-			if (controls.UI_UP_P || upScroll) changeSelection(-1);
-			if (controls.UI_DOWN_P || downScroll) changeSelection(1);
+			if ((controls.UI_UP_P || virtualPad.buttonUp.justPressed) || upScroll) changeSelection(-1);
+			if ((controls.UI_DOWN_P || virtualPad.buttonDown.justPressed) || downScroll) changeSelection(1);
 	
-			if (controls.BACK) {
+			if (controls.BACK || virtualPad.buttonB.justPressed) {
 				ClientPrefs.saveSettings();
 				close();
 				FlxG.sound.play(Paths.sound('cancelMenu'));
