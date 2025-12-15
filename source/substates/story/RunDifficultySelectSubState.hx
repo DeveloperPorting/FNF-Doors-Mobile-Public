@@ -32,6 +32,7 @@ class RunDifficultySelectSubState extends StoryModeSubState
 		super();
 
 		this.curDifficulty = 1;
+		controls.isInSubstate = true;
 		PlayState.storyDifficulty = curDifficulty;
 
 		for(i in 0...CoolUtil.defaultDifficulties.length){
