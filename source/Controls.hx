@@ -282,9 +282,6 @@ class Controls
 	@:noCompletion
 	private function get_gameplayRequest():Dynamic
 	{
-		if (isInSubstate)
-			return MusicBeatSubstate.instance.mobileControls.current.target;
-		else
 			return MusicBeatState.instance.mobileControls.current.target;
 	}
 
