@@ -17,6 +17,7 @@ class SpecialThanksSubState extends MusicBeatSubstate
     public function new(specialThanks:Array<SpecialThanks>)
     {
         super();
+		controls.isInSubstate = true;
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0.6;
