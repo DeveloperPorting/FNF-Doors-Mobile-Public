@@ -3661,7 +3661,20 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			DoorsUtil.curRun.runSeconds += elapsed;
+		    for(curItem in DoorsUtil.curRun.curInventory.items){
+			  if(curItem != null){
+			    for(i in 0...itemInventory.items.members.length){
+					itemInventory.items.members[i].checkOverlap(camHUD);
+					  if(itemInventory.items.members[i].itemData.itemSlot == curItem.itemSlot && itemInventory.items.members[i].isHovered){
+						  if(FlxG.mouse.justPressed){
+							  itemInventory.items.members[i].onSongUse();
+						  }
+			          }
+			      }
+			   }
+			}
+			
+	            DoorsUtil.curRun.runSeconds += elapsed;
 			if(DoorsUtil.curRun.runSeconds >= 3600) {
 				DoorsUtil.curRun.runHours++;
 				DoorsUtil.curRun.runSeconds -= 3600;
