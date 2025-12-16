@@ -273,11 +273,13 @@ class Controls
 	@:noCompletion
 	private function get_requested():Dynamic
 	{
+		final state:MusicBeatState = MusicBeatState.instance;
 		final substate:MusicBeatSubstate = MusicBeatSubstate.instance;
 		
 		if (substate != null)
 			return MusicBeatSubstate.instance;
-		else
+
+		if (state != null)
 			return MusicBeatState.instance;
 	}
 	
