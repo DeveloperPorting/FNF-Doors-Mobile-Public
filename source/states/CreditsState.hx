@@ -408,7 +408,7 @@ class CreditsState extends MusicBeatState
 		for (i in 0...credits.length) {
 			var credit = credits[i];
 			var creditX = 357 + (i * 1280); // Calculate creditX based on index
-			if (credit.socials != null && camPos.x >= creditX - 800 && camPos.x <= creditX + 800 && FlxG.keys.justPressed.ENTER) {
+			if (credit.socials != null && camPos.x >= creditX - 800 && camPos.x <= creditX + 800 && (FlxG.keys.justPressed.ENTER || virtualPad.buttonA.justPressed)) {
 				persistentUpdate = false;
 				openSubState(new SocialsSubstate(credit.name.toUpperCase(), credit.socials));
 			}
@@ -416,7 +416,7 @@ class CreditsState extends MusicBeatState
 	}
 
 	function handleSpecialThanks(elapsed:Float){
-		if(camPos.x >= specialThanksX - 800 && camPos.x <= specialThanksX + 800 && FlxG.keys.justPressed.ENTER){
+		if(camPos.x >= specialThanksX - 800 && camPos.x <= specialThanksX + 800 && (FlxG.keys.justPressed.ENTER || virtualPad.buttonA.justPressed)){
 			persistentUpdate = false;
 			openSubState(new SpecialThanksSubState(specialThanks));
 		} 
