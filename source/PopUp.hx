@@ -36,12 +36,12 @@ class PopUp extends Sprite
 
     function getScreenHeight()
     {
-        return Lib.application.window.height-10;
+        return Lib.application.window.height-20;
     }
 
     function getScreenWidth()
     {
-        return Lib.application.window.width-10;
+        return Lib.application.window.width-20;
     }
 
     public function new(time:Float, size:PopUpSize)
