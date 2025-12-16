@@ -68,6 +68,11 @@ class SpecialThanksSubState extends MusicBeatSubstate
             listHeight += 80;
         }
 
+		#if mobile
+		addVirtualPad(UP_DOWN, B);
+		addVirtualPadCamera();
+		#end
+
         var scrollBar:ScrollBar = new ScrollBar(1075, 94, this, "scroll", listHeight);
         scrollBar.scrollBar.loadGraphic(Paths.image("menus/specialThanks/scrollBar"));
         scrollBar.scrollBG.loadGraphic(Paths.image("menus/specialThanks/scrollBG"));
@@ -76,7 +81,7 @@ class SpecialThanksSubState extends MusicBeatSubstate
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.justPressed.ESCAPE)
+        if (FlxG.keys.justPressed.ESCAPE || virtualPad.buttonB.justPressed)
         {
             close();
         }
