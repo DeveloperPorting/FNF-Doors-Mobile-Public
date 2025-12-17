@@ -128,7 +128,7 @@ class DoorsVideo extends FlxSpriteGroup {
 				   holdingTime = Math.max(0, FlxMath.lerp(holdingTime, -0.1, FlxMath.bound(elapsed * 3, 0, 1)));
 				}
 		    }
-		#end
+		    #end
 			
 			updateSkipAlpha();
 
