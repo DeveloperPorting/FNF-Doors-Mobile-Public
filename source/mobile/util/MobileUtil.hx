@@ -1,11 +1,20 @@
-package mobile.util;
+package mobile.utils;
 
 #if android
-import extension.androidtools.os.Build.VERSION;
-import extension.androidtools.os.Environment;
-import extension.androidtools.Permissions;
-import extension.androidtools.Settings;
+import extension.androidtools.callback.CallBack as AndroidCallBack;
+import extension.androidtools.content.Context as AndroidContext;
+import extension.androidtools.widget.Toast as AndroidToast;
+import extension.androidtools.os.Environment as AndroidEnvironment;
+import extension.androidtools.Permissions as AndroidPermissions;
+import extension.androidtools.Settings as AndroidSettings;
+import extension.androidtools.Tools as AndroidTools;
+import extension.androidtools.os.Build.VERSION as AndroidVersion;
+import extension.androidtools.os.Build.VERSION_CODES as AndroidVersionCode;
 #end
+
+import lime.system.System as LimeSystem;
+import haxe.io.Path;
+import haxe.Exception;
 
 import lime.system.System;
 import lime.app.Application;
@@ -14,133 +23,190 @@ import haxe.io.Bytes;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
+import sys.io.Process;
 #end
 
 using StringTools;
 
 /** 
-* @Authors MaysLastPlay, MarioMaster (MasterX-39), Dechis (dx7405)
-* @version: 0.3.0
+* @Authors MaysLastPlay, ArkoseLabs, MarioMaster (MasterX-39), Dechis (dx7405)
+* @version: 0.4.0 (temp version)
 **/
+class MobileUtil
+{
+	#if sys
+	// root directory, used for handling the saved storage type and path
+	public static final rootDir:String = LimeSystem.applicationStorageDirectory;
 
-class MobileUtil {
-  public static var currentDirectory:String = null;
-  private static var useAlternativePath:Bool = false;
+	public static inline function getStorageDirectory():String
+		return #if android haxe.io.Path.addTrailingSlash(AndroidContext.getExternalFilesDir()) #elseif ios lime.system.System.documentsDirectory #else Sys.getCwd() #end;
 
-  /**
-   * Get the directory for the application. (External for Android Platform and Internal for iOS Platform.)
-   * Now with automatic fallback to Android/media path if permissions fail.
-   */
-public static function getDirectory():String {
-    #if android
-    var preferredPath = "/storage/emulated/0/.FNF Doors/";
-    var fallbackPath = "/storage/emulated/0/Android/media/com.glasshat.glasshatengine/";
-    
-    if (FileSystem.exists(preferredPath + "assets") && FileSystem.isDirectory(preferredPath + "assets")) {
-        useAlternativePath = false;
-        return preferredPath;
-    }
-    
-    try {
-        if (!FileSystem.exists(preferredPath)) {
-            FileSystem.createDirectory(preferredPath);
-        }
-        var testFile = preferredPath + ".permission_test";
-        File.saveContent(testFile, "test");
-        FileSystem.deleteFile(testFile);
-        useAlternativePath = false;
-        return preferredPath;
-    } catch (e:Dynamic) {
-        useAlternativePath = true;
-        return fallbackPath;
-    }
-    #elseif ios
-    return System.documentsDirectory;
-    #else
-    return "";
-    #end
-}
+	#if android
+	public static inline function getCustomStoragePath():String
+		return AndroidContext.getExternalFilesDir() + '/storagemodes.txt';
+	public static inline function getStorageTypePath():String
+		return AndroidContext.getExternalFilesDir() + '/storagetype.txt';
 
+	public static function getCustomStorageDirectories(?doNotSeperate:Bool):Array<String>
+	{
+		var curTextFile:String = getCustomStoragePath();
+		var ArrayReturn:Array<String> = [];
+		for (mode in CoolUtil.coolTextFile(curTextFile))
+		{
+			if(mode.trim().length < 1) continue;
 
-  /**
-   * Requests Storage Permissions on Android Platform.
-   */
-  public static function getPermissions():Void {
-    try {
-        #if android
-        //if (VERSION.SDK_INT >= 30) {
-            if (!Environment.isExternalStorageManager()) {
-                Settings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
-            }
-        /*}
-        else if (VERSION.SDK_INT == 29) {
-            try {
-                if (!Environment.isExternalStorageManager()) {
-                    Settings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
-                }
-            } catch (e1:Dynamic) {
-                trace('Fallback 1 failed: $e1');
-            }
+			//turning the readle to original one (also, much easier to rewrite the code) -KralOyuncu2010x
+			if (mode.contains('Name: ')) mode = mode.replace('Name: ', '');
+			if (mode.contains(' Folder: ')) mode = mode.replace(' Folder: ', '|');
+			//trace(mode);
 
-            try {
-                Permissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
-            } catch (e2:Dynamic) {
-                trace('Fallback 2 failed: $e2');
-            }
+			var dat = mode.split("|");
+			if (doNotSeperate)
+				ArrayReturn.push(mode); //get both as array
+			else
+				ArrayReturn.push(dat[0]); //get storage name as array
+		}
+		return ArrayReturn;
+	}
 
-            try {
-                if (!FileSystem.exists(MobileUtil.getDirectory())) {
-                    FileSystem.createDirectory(MobileUtil.getDirectory());
-                }
-            } catch (e3:Dynamic) {
-                trace('Fallback 3 failed: $e3');
-            }
-        }
-        else {
-            Permissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
-        }*/
-        #end
+	// always force path due to haxe
+	public static var currentDirectory:String;
+	public static function initDirectory():String {
+		var daPath:String = '';
+		if (!FileSystem.exists(getStorageTypePath()))
+			File.saveContent(getStorageTypePath(), 'EXTERNAL');
 
-        var targetDir = MobileUtil.getDirectory();
-        if (!FileSystem.exists(targetDir)) {
-            try {
-                FileSystem.createDirectory(targetDir);
-                trace('Successfully created directory: $targetDir');
-            } catch (e:Dynamic) {
-                trace('Failed to create directory $targetDir: $e');
-            }
-        }
-    } catch (e:Dynamic) {
-        trace('Error on creating directory: $e');
-        var finalDir = MobileUtil.getDirectory();
-        if (!FileSystem.exists(finalDir)) {
-            try {
-                FileSystem.createDirectory(finalDir);
-            } catch (e2:Dynamic) {
-                Application.current.window.alert(
-                    'Uncaught Error',
-                    "It seems you did not enable the required permissions to run the game. " +
-                    "Please enable them and add files to ${finalDir}. Press OK to close the game."
-                );
-                System.exit(0);
-            }
-        }
-    }
-  }
+		var curStorageType:String = File.getContent(getStorageTypePath());
 
-  /**
-   * Saves a file to the external storage.
-   */
-  public static function save(fileName:String = 'Ye', fileExt:String = '.txt', fileData:String = 'Nice try, but you failed, try again!') {
-    var savesDir:String = MobileUtil.getDirectory() + 'saves/';
+		/* Put this there because I don't want to override original paths, also brokes the normal storage system */
+		for (line in getCustomStorageDirectories(true))
+		{
+			if (line.startsWith(curStorageType) && (line != '' || line != null)) {
+				var dat = line.split("|");
+				daPath = dat[1];
+			}
+		}
 
-    if (!FileSystem.exists(savesDir))
-      FileSystem.createDirectory(savesDir);
+		/* Hardcoded Storage Types, these types cannot be changed by Custom Type */
+		switch(curStorageType) {
+			case 'EXTERNAL':
+				daPath = AndroidEnvironment.getExternalStorageDirectory() + '/.' + lime.app.Application.current.meta.get('file');
+			case 'EXTERNAL_OBB':
+				daPath = AndroidContext.getObbDir();
+			case 'EXTERNAL_MEDIA':
+				daPath = AndroidEnvironment.getExternalStorageDirectory() + '/Android/media/' + lime.app.Application.current.meta.get('packageName');
+			case 'EXTERNAL_DATA':
+				daPath = AndroidContext.getExternalFilesDir();
+			default: //technically not needed but here for safety -ArkoseLabs
+				if (daPath == null || daPath == '') daPath = AndroidEnvironment.getExternalStorageDirectory() + '/.' + lime.app.Application.current.meta.get('file');
+		}
+		daPath = Path.addTrailingSlash(daPath);
+		currentDirectory = daPath;
+		return daPath;
+	}
+	public static function getDirectory():String
+	{
+		#if android
+		return currentDirectory;
+		#elseif ios
+		return LimeSystem.documentsDirectory;
+		#else
+		return Sys.getCwd();
+		#end
+	}
 
-    File.saveContent(savesDir + fileName + fileExt, fileData);
-  }
+	/**
+	 * Requests Storage Permissions on Android Platform.
+	 */
+	public static function getPermissions():Void
+	{
+		if (AndroidVersion.SDK_INT >= AndroidVersionCode.TIRAMISU)
+			AndroidPermissions.requestPermissions([
+				'READ_MEDIA_IMAGES',
+				'READ_MEDIA_VIDEO',
+				'READ_MEDIA_AUDIO',
+				'READ_MEDIA_VISUAL_USER_SELECTED'
+			]);
+		else
+			AndroidPermissions.requestPermissions(['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']);
 
-  public static function copySpesificFileFromAssets(filePathInAssets:String, copyTo:String, ?changeable:Bool)
+		if (!AndroidEnvironment.isExternalStorageManager())
+			AndroidSettings.requestSetting('MANAGE_APP_ALL_FILES_ACCESS_PERMISSION');
+
+		try
+		{
+			if (!FileSystem.exists(MobileUtil.getStorageDirectory()))
+				FileSystem.createDirectory(MobileUtil.getStorageDirectory());
+		}
+		catch (e:Dynamic)
+		{
+			Application.current.window.alert("Looks like you doesn't have directory named\n" + MobileUtil.getStorageDirectory() +
+			"\nBut maybe this couldn't be right, android loves to give errors like this\nPress OK & let's see what happens\nCurrent Error You Got:\n" + e, "Warning!");
+			//lime.system.System.exit(1);
+		}
+
+		try
+		{
+			if (!FileSystem.exists(MobileUtil.getDirectory() + 'mods'))
+				FileSystem.createDirectory(MobileUtil.getDirectory() + 'mods');
+		}
+		catch (e:Dynamic)
+		{
+			Application.current.window.alert("Looks like you doesn't have directory named\n" + MobileUtil.getDirectory() + 'mods' + 
+			"\nBut maybe this couldn't be right, android loves to give errors like this\nPress OK & let's see what happens\nCurrent Error You Got:\n" + e, "Warning!");
+			//lime.system.System.exit(1);
+		}
+	}
+
+	public static var lastGettedPermission:Int;
+	public static function chmodPermission(fullPath:String) {
+		var process = new Process('stat -c %a ${fullPath}');
+		var stringOutput:String = process.stdout.readAll().toString();
+		process.close();
+		lastGettedPermission = Std.parseInt(stringOutput);
+	}
+
+	public static function chmod(permissions:Int, fullPath:String) {
+		var process = new Process('chmod ${permissions} ${fullPath}');
+
+		var exitCode = process.exitCode();
+		/*
+		if (exitCode == 0)
+			trace(‘Success: Permissions for the ${fullPath} file have been set to (${permissions})’);
+		else
+		{
+			var errorOutput = process.stderr.readAll().toString();
+			trace(‘ERROR: Request to change permissions for the (${fullPath}) file failed. Exit Code: ${exitCode}, Error: ${errorOutput}’);
+		}
+		*/
+		process.close();
+	}
+	#end
+
+	/**
+	 * Saves a file to the external storage.
+	 */
+	public static function save(fileName:String = 'Ye', fileExt:String = '.txt', fileData:String = 'Nice try, but you failed, try again!', ?alert:Bool = true):Void
+	{
+		final folder:String = #if android MobileUtil.getDirectory() + #else Sys.getCwd() + #end 'saves/';
+		try
+		{
+			if (!FileSystem.exists(folder))
+				FileSystem.createDirectory(folder);
+
+			File.saveContent('$folder/$fileName', fileData);
+			if (alert)
+				Application.current.window.alert('${fileName} has been saved.', "Success!");
+		}
+		catch (e:Dynamic)
+			if (alert)
+				Application.current.window.alert('${fileName} couldn\'t be saved.\n${e.message}', "Error!");
+			else
+				trace('$fileName couldn\'t be saved. (${e.message})');
+	}
+	#end
+
+	public static function copySpesificFileFromAssets(filePathInAssets:String, copyTo:String, ?changeable:Bool)
 	{
 		try {
 			if (Assets.exists(filePathInAssets)) {
@@ -172,5 +238,265 @@ public static function getDirectory():String {
 		} catch (e:Dynamic) {
 			trace('Error copying file $filePathInAssets: $e');
 		}
-  }
+	}
+
+	/**
+	 * Copies recursively the assets folder from the APK to external directory
+	 * @param sourcePath Path to the assets folder inside APK (usually "assets/")
+	 * @param targetPath Destination path (optional, uses Sys.getCwd() + "assets/" if not specified)
+	 */
+	public static function copyAssetsFromAPK(sourcePath:String = "assets/", targetPath:String = null):Void {
+		#if mobile
+		if (targetPath == null)
+			targetPath = Sys.getCwd() + "assets/";
+
+		try {
+			if (!FileSystem.exists(targetPath))
+				FileSystem.createDirectory(targetPath);
+
+			copyAssetsRecursively(sourcePath, targetPath);
+
+			trace('Assets successfully copied to: $targetPath');
+		} catch (e:Dynamic) {
+			trace('Error copying assets: $e');
+			Application.current.window.alert('Error!','Error copying game files. Check storage permissions or re-open the game to see what happens.');
+		}
+		#end
+	}
+
+	/**
+	 * Helper function to copy assets recursively
+	 */
+	private static function copyAssetsRecursively(sourcePath:String, targetPath:String):Void {
+		#if mobile
+		try {
+			var cleanSourcePath = sourcePath;
+			if (StringTools.endsWith(cleanSourcePath, "/"))
+				cleanSourcePath = cleanSourcePath.substring(0, cleanSourcePath.length - 1);
+
+			var assetList:Array<String> = Assets.list();
+
+			for (assetPath in assetList) {
+				if (StringTools.startsWith(assetPath, cleanSourcePath)) {
+					var relativePath = assetPath;
+
+					if (StringTools.startsWith(relativePath, "assets/"))
+						relativePath = relativePath.substring(7);
+
+					if (relativePath == "") continue;
+
+					var fullTargetPath = targetPath + relativePath;
+
+					var targetDir = haxe.io.Path.directory(fullTargetPath);
+					if (targetDir != "" && !FileSystem.exists(targetDir))
+						createDirectoryRecursive(targetDir);
+
+					try {
+						if (Assets.exists(assetPath)) {
+							var fileData:Bytes = Assets.getBytes(assetPath);
+							if (fileData != null) {
+								File.saveBytes(fullTargetPath, fileData);
+								trace('Copied: $assetPath -> $fullTargetPath');
+							} else {
+								var textData = Assets.getText(assetPath);
+								if (textData != null) {
+									File.saveContent(fullTargetPath, textData);
+									trace('Copied (text): $assetPath -> $fullTargetPath');
+								}
+							}
+						}
+					} catch (e:Dynamic) {
+						trace('Error copying file $assetPath: $e');
+					}
+				}
+			}
+		} catch (e:Dynamic) {
+			trace('Error in recursive copy: $e');
+			throw e;
+		}
+		#end
+	}
+
+	/**
+	 * Creates directories recursively
+	 */
+	private static function createDirectoryRecursive(path:String):Void {
+		#if mobile
+		if (FileSystem.exists(path)) return;
+
+		var pathParts = path.split("/");
+		var currentPath = "";
+
+		for (part in pathParts) {
+			if (part == "") continue;
+			currentPath += "/" + part;
+
+			if (!FileSystem.exists(currentPath)) {
+				try {
+					FileSystem.createDirectory(currentPath);
+				} catch (e:Dynamic) {
+					trace('Error creating directory $currentPath: $e');
+				}
+			}
+		}
+		#end
+	}
+
+	/**
+	 * Copies assets with progress (advanced version)
+	 * @param sourcePath Path to assets folder inside APK
+	 * @param targetPath Destination path
+	 * @param onProgress Optional callback for progress (current file, current count, total files)
+	 * @param onComplete Optional callback when finished
+	 */
+	public static function copyAssetsWithProgress(sourcePath:String = "assets/", targetPath:String = null, 
+													onProgress:String->Int->Int->Void = null, onComplete:Void->Void = null):Void {
+		#if mobile
+		if (targetPath == null) {
+			targetPath = Sys.getCwd() + "assets/";
+		}
+
+		try {
+			if (!FileSystem.exists(targetPath)) {
+				FileSystem.createDirectory(targetPath);
+			}
+
+			var totalFiles = countAssetsFiles(sourcePath);
+			var currentFile = 0;
+
+			trace('Starting copy of $totalFiles files...');
+
+			var cleanSourcePath = sourcePath;
+			if (StringTools.endsWith(cleanSourcePath, "/")) {
+				cleanSourcePath = cleanSourcePath.substring(0, cleanSourcePath.length - 1);
+			}
+
+			var assetList:Array<String> = Assets.list();
+
+			for (assetPath in assetList) {
+				if (StringTools.startsWith(assetPath, cleanSourcePath)) {
+					var relativePath = assetPath;
+
+					if (StringTools.startsWith(relativePath, "assets/")) {
+						relativePath = relativePath.substring(7);
+					}
+
+					if (relativePath == "") continue;
+
+					var fullTargetPath = targetPath + relativePath;
+
+					var targetDir = haxe.io.Path.directory(fullTargetPath);
+					if (targetDir != "" && !FileSystem.exists(targetDir)) {
+						createDirectoryRecursive(targetDir);
+					}
+
+					try {
+						if (Assets.exists(assetPath)) {
+							var fileData:Bytes = Assets.getBytes(assetPath);
+							if (fileData != null) {
+								File.saveBytes(fullTargetPath, fileData);
+							} else {
+								var textData = Assets.getText(assetPath);
+								if (textData != null) {
+									File.saveContent(fullTargetPath, textData);
+								}
+							}
+
+							currentFile++;
+
+							if (onProgress != null) {
+								onProgress(relativePath, currentFile, totalFiles);
+							}
+
+							trace('[$currentFile/$totalFiles] Copied: $relativePath');
+						}
+
+					} catch (e:Dynamic) {
+						trace('Error copying $assetPath: $e');
+					}
+				}
+			}
+			trace('Copy completed! $currentFile files copied.');
+			if (onComplete != null) {
+				onComplete();
+			}
+		} catch (e:Dynamic) {
+			trace('Error copying assets: $e');
+			Application.current.window.alert('Error', 'Error copying game files. Check storage permissions or re-open the game to see what happens.');
+		}
+		#end
+	}
+
+	/**
+	 * Counts total number of asset files for progress
+	 */
+	inline private static function countAssetsFiles(sourcePath:String):Int {
+		#if mobile
+		var count = 0;
+		var cleanSourcePath = sourcePath;
+		if (StringTools.endsWith(cleanSourcePath, "/"))
+			cleanSourcePath = cleanSourcePath.substring(0, cleanSourcePath.length - 1);
+		var assetList:Array<String> = Assets.list();
+
+		for (assetPath in assetList) {
+			if (StringTools.startsWith(assetPath, cleanSourcePath)) {
+				var relativePath = assetPath;
+
+				if (StringTools.startsWith(relativePath, "assets/"))
+					relativePath = relativePath.substring(7);
+
+				if (relativePath != "")
+					count++;
+			}
+		}
+
+		return count;
+		#else
+		return 0;
+		#end
+	}
+
+	/**
+	 * Checks if assets have already been copied
+	 */
+	inline public static function areAssetsCopied(sourcePath:String = "assets/", targetPath:String = null):Bool {
+		#if mobile
+		if (targetPath == null)
+			targetPath = Sys.getCwd() + "assets/";
+
+		if (!FileSystem.exists(targetPath))
+			return false;
+
+		var sourceCount = countAssetsFiles(sourcePath);
+		var targetCount = countFilesInDirectory(targetPath);
+
+		return sourceCount > 0 && sourceCount == targetCount;
+		#else
+		return false;
+		#end
+	}
+
+	/**
+	 * Counts files in a directory recursively
+	 */
+	inline private static function countFilesInDirectory(path:String):Int {
+		#if mobile
+		if (!FileSystem.exists(path)) return 0;
+
+		var count = 0;
+		var items = FileSystem.readDirectory(path);
+
+		for (item in items) {
+			var fullPath = path + "/" + item;
+			if (FileSystem.isDirectory(fullPath))
+				count += countFilesInDirectory(fullPath);
+			else
+				count++;
+		}
+
+		return count;
+		#else
+		return 0;
+		#end
+	}
 }
