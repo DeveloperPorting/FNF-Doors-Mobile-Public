@@ -35,6 +35,7 @@ import sys.thread.Thread;
 
 #if mobile
 import mobile.util.MobileUtil;
+import openfl.events.UncaughtErrorEvent;
 #end
 
 using StringTools;
@@ -108,10 +109,13 @@ class Main extends Sprite
 		#end
 
 		#if mobile
-		MobileUtil.getPermissions();
+		#if android
 		MobileUtil.initDirectory(); //do not make this jobs everytime
-		Sys.setCwd(MobileUtil.getStorageDirectory());
+		MobileUtil.getPermissions();
 		MobileUtil.copySpesificFileFromAssets('mobile/storageModes.txt', MobileUtil.getCustomStoragePath());
+		#end
+		Sys.setCwd(MobileUtil.getStorageDirectory());
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
 		#end
 
 		super();
