@@ -109,12 +109,11 @@ class Main extends Sprite
 		#end
 
 		#if mobile
-		#if android
-		MobileUtil.initDirectory(); //do not make this jobs everytime
 		MobileUtil.getPermissions();
-		MobileUtil.copySpesificFileFromAssets('mobile/storageModes.txt', MobileUtil.getCustomStoragePath());
-		#end
-		Sys.setCwd(MobileUtil.getStorageDirectory());
+		Sys.setCwd(haxe.io.Path.addTrailingSlash(MobileUtil.getDirectory()));
+
+		if (!MobileUtil.areAssetsCopied("assets/"))
+			MobileUtil.copyAssetsFromAPK("assets/");
 		#end
 
 		super();
