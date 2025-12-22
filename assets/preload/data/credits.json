@@ -255,7 +255,7 @@
         "name": "Special Thanks",
         "role": [],
         "id": "playtesters",
-        "message": "Press ENTER to see more !",
+        "message": "Press A to see more !",
         "specialThanks": [
             {
                 "group": "Playtesting - Alpha",
