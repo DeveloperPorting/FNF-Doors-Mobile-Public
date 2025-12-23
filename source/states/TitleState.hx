@@ -90,10 +90,12 @@ class TitleState extends MusicBeatState
 		
 		// Setup camera
 		setupCamera();
-		
+
+		#if desktop
 		// Check for update reports
 		report = hasCheckedUpdates ? null : backend.updating.UpdateUtil.checkForUpdates();
 		hasCheckedUpdates = true;
+		#end
 		
 		// Create and add all UI elements
 		createBackground();
