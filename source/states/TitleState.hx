@@ -161,9 +161,9 @@ class TitleState extends MusicBeatState
 		persistentDraw = true;
 		
 		// Verify required assets exist
-		if(Paths.image("gravy", "preload") == null){
+/*		if(Paths.image("gravy", "preload") == null){
 			throw("You have deleted the gravy. Die.");
-		}
+		} */
 	}
 
 	private function setupCamera():Void 
