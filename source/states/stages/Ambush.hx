@@ -74,6 +74,8 @@ class Ambush extends BaseStage
 		comboPosition[0] -= 600;
 		comboPosition[1] -= 100;
 
+		PlayState.instance.boyfriendGroup.alpha = 0;
+
 		dad.x = 25;
 	    dad.y = 130; // marcelo salvou dms
 	}
