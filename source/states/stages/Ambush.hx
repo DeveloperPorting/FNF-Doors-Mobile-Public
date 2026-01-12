@@ -52,8 +52,8 @@ class Ambush extends BaseStage
 		}
 		add(abushStage);
 
-		boyfriendGroup.visible = false;
-		boyfriendGroup.alpha = 0;
+		boyfriend.visible = false;
+		boyfriend.alpha = 0;
 
 		abushFog = new FlxSprite(-300, -110);
 		abushFog.frames = Paths.getSparrowAtlas('GreenLight');
