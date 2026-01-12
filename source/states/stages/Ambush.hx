@@ -52,9 +52,6 @@ class Ambush extends BaseStage
 		}
 		add(abushStage);
 
-		boyfriend.visible = false;
-		boyfriend.alpha = 0;
-
 		abushFog = new FlxSprite(-300, -110);
 		abushFog.frames = Paths.getSparrowAtlas('GreenLight');
 		abushFog.animation.addByPrefix('I', 'TheIdle0', 24);
@@ -74,6 +71,9 @@ class Ambush extends BaseStage
 		comboPosition = [248, 474]; // average of the two characters
 		comboPosition[0] -= 600;
 		comboPosition[1] -= 100;
+
+		boyfriend.visible = false;
+		boyfriend.alpha = 0;
 
 		dad.x = 25;
 	    dad.y = 130; // marcelo salvou dms
