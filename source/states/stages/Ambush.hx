@@ -72,9 +72,6 @@ class Ambush extends BaseStage
 		comboPosition[0] -= 600;
 		comboPosition[1] -= 100;
 
-		boyfriend.visible = false;
-		boyfriend.alpha = 0;
-
 		dad.x = 25;
 	    dad.y = 130; // marcelo salvou dms
 	}
@@ -85,5 +82,8 @@ class Ambush extends BaseStage
 	    offsetY = Std.int(dad.getMidpoint().y + 70); 
 		bfoffsetX = Std.int(dad.getMidpoint().x);
 		bfoffsetY = Std.int(dad.getMidpoint().y + 70);
+
+		boyfriend.visible = false;
+		boyfriend.alpha = 0;
 	}
 }
